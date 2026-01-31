@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsive Tab Website</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: #f4f4f4;
+    }
+
+    /* Tab Menu */
+    .tabs {
+        display: flex;
+        background: #333;
+    }
+
+    .tabs button {
+        flex: 1;
+        padding: 15px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .tabs button:hover,
+    .tabs button.active {
+        background: #555;
+    }
+
+    /* Content Area */
+    .content {
+        flex: 1;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .content.active {
+        display: flex;
+    }
+
+    .box {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        margin-bottom: 15px;
+    }
+
+    p {
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .tabs button {
+            font-size: 14px;
+            padding: 12px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Tab Menu -->
+<div class="tabs">
+    <button class="active" onclick="openTab('home', this)">Home</button>
+    <button onclick="openTab('check', this)">Check</button>
+    <button onclick="openTab('about', this)">About Us</button>
+</div>
+
+<!-- Home -->
+<div id="home" class="content active">
+    <div class="box">
+        <h1>Home</h1>
+        <p>
+            Welcome to our responsive website.<br>
+            This is the Home page.
+        </p>
+    </div>
+</div>
+
+<!-- Check -->
+<div id="check" class="content">
+    <div class="box">
+        <h1>Check</h1>
+        <p>
+            This page is for checking information.<br>
+            You can add forms or results here.
+        </p>
+    </div>
+</div>
+
+<!-- About Us -->
+<div id="about" class="content">
+    <div class="box">
+        <h1>About Us</h1>
+        <p>
+            We are a team passionate about web development.<br>
+            Simple, clean and responsive design.
+        </p>
+    </div>
+</div>
+
+<script>
+    function openTab(tabName, element) {
+        let contents = document.querySelectorAll('.content');
+        let buttons = document.querySelectorAll('.tabs button');
+
+        contents.forEach(c => c.classList.remove('active'));
+        buttons.forEach(b => b.classList.remove('active'));
+
+        document.getElementById(tabName).classList.add('active');
+        element.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
