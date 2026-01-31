@@ -191,145 +191,200 @@ async function predict() {
 </script>
 
 </body>
-</html><!DOCTYPE html>
+</html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Responsive Tab Website</title>
+<title>AI Image Check</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-    }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
 
-    body {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        background: #f4f4f4;
-    }
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    flex-direction: column;
+}
 
-    /* Tab Menu */
-    .tabs {
-        display: flex;
-        background: #333;
-    }
+/* Tabs */
+.tabs {
+    display: flex;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(10px);
+}
 
-    .tabs button {
-        flex: 1;
-        padding: 15px;
-        background: none;
-        border: none;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-    }
+.tabs button {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    background: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
-    .tabs button:hover,
-    .tabs button.active {
-        background: #555;
-    }
+.tabs button.active,
+.tabs button:hover {
+    background: rgba(255,255,255,0.15);
+}
 
-    /* Content Area */
-    .content {
-        flex: 1;
-        display: none;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 20px;
-    }
+/* Content */
+.content {
+    flex: 1;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+}
 
-    .content.active {
-        display: flex;
-    }
+.content.active {
+    display: flex;
+}
 
-    .box {
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        max-width: 500px;
-        width: 100%;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+/* Card */
+.box {
+    background: white;
+    padding: 35px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    text-align: center;
+}
 
-    h1 {
-        margin-bottom: 15px;
-    }
+h1 {
+    margin-bottom: 10px;
+    color: #333;
+}
 
-    p {
-        font-size: 18px;
-        line-height: 1.6;
-    }
+.subtitle {
+    color: #777;
+    margin-bottom: 20px;
+}
 
-    /* Responsive */
-    @media (max-width: 600px) {
-        .tabs button {
-            font-size: 14px;
-            padding: 12px;
-        }
-    }
+input[type="file"] {
+    margin: 15px 0;
+}
+
+#preview {
+    margin-top: 15px;
+    width: 200px;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* Result */
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f3f6ff;
+    border-radius: 12px;
+}
+
+.result strong {
+    font-size: 22px;
+    color: #4a4aff;
+}
+
+.percent {
+    font-size: 36px;
+    font-weight: bold;
+    color: #222;
+}
 </style>
 </head>
 
 <body>
 
-<!-- Tab Menu -->
 <div class="tabs">
     <button class="active" onclick="openTab('home', this)">Home</button>
     <button onclick="openTab('check', this)">Check</button>
-    <button onclick="openTab('about', this)">About Us</button>
+    <button onclick="openTab('about', this)">About</button>
 </div>
 
-<!-- Home -->
 <div id="home" class="content active">
     <div class="box">
-        <h1>Home</h1>
-        <p>
-            Welcome to our responsive website.<br>
-            This is the Home page.
-        </p>
+        <h1>AI Image Checker</h1>
+        <p class="subtitle">Upload an image and let AI analyze it</p>
     </div>
 </div>
 
-<!-- Check -->
 <div id="check" class="content">
     <div class="box">
-        <h1>Check</h1>
-        <p>
-            This page is for checking information.<br>
-            You can add forms or results here.
-        </p>
+        <h1>Image Check</h1>
+        <p class="subtitle">Upload image for prediction</p>
+
+        <input type="file" accept="image/*" onchange="loadImage(event)">
+        <img id="preview">
+
+        <div id="result" class="result" style="display:none;">
+            <div>Result</div>
+            <strong id="className"></strong>
+            <div class="percent" id="percent"></div>
+        </div>
     </div>
 </div>
 
-<!-- About Us -->
 <div id="about" class="content">
     <div class="box">
         <h1>About Us</h1>
-        <p>
-            We are a team passionate about web development.<br>
-            Simple, clean and responsive design.
+        <p class="subtitle">
+            AI Image Classification Demo<br>
+            Built with Teachable Machine
         </p>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
 <script>
-    function openTab(tabName, element) {
-        let contents = document.querySelectorAll('.content');
-        let buttons = document.querySelectorAll('.tabs button');
+function openTab(tabName, element) {
+    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
 
-        contents.forEach(c => c.classList.remove('active'));
-        buttons.forEach(b => b.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    element.classList.add('active');
+}
 
-        document.getElementById(tabName).classList.add('active');
-        element.classList.add('active');
-    }
+const URL = "https://teachablemachine.withgoogle.com/models/r23Nf0VWS/";
+let model;
+const img = document.getElementById("preview");
+
+async function init() {
+    model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+}
+init();
+
+function loadImage(event) {
+    const reader = new FileReader();
+    reader.onload = e => img.src = e.target.result;
+    reader.readAsDataURL(event.target.files[0]);
+    img.onload = predict;
+}
+
+async function predict() {
+    const prediction = await model.predict(img);
+
+    let best = prediction.reduce((a,b) => a.probability > b.probability ? a : b);
+
+    document.getElementById("result").style.display = "block";
+    document.getElementById("className").innerText = best.className;
+    document.getElementById("percent").innerText =
+        (best.probability * 100).toFixed(2) + " %";
+}
 </script>
 
 </body>
 </html>
+
